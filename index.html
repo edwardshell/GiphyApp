@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style type="text/css">
+        button,
+        div,
+        form,
+        input {
+            margin: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- where animal buttons will go -->
+    <div class="container">
+        <div class="animal-btns"></div>
+
+        <form id="animal-form">
+            <label for="animal-input">Add an Animal</label>
+            <input type="text" id="animal-input">
+            <br>
+            <br>
+            <!-- Button triggers new movie to be added -->
+            <input id="add-animal" type="submit" value="Add a Movie Bro">
+        </form>
+
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+        <script type="text/javascript">
+
+            // Variables
+
+            var mainAnimals = ["Dog", "Cat", "Horse", "Pig"];
+
+            function displayAnimalGifs() {
+
+                var queryURL = "https://api.giphy.com/v1/gifs/search?api_key=" + apiKey + "&q=";
+
+                var apiKey = "6dok1Fe1Fc5TAkOPJW57eoTpFnPgCNT3";
+
+                var animalDiv = $("#animal-btns");
+
+
+
+                $.ajax({
+                    url: queryURL,
+                    method: "GET"
+                }).then(function (response) {
+                    createRow(response);
+                });
+
+            }
+
+            function renderButtons() {
+
+                // Deleting the animals prior to adding new movies
+                // (this is necessary otherwise we will have repeat buttons)
+                $("#animal-btns").empty();
+
+                for (var i = 0; i < mainAnimals.length; i++) {
+                    // Then dynamicaly generating buttons for each movie in the array
+                    // This code $("<button>") is all jQuery needs to create the beginning and end tag. (<button></button>)
+                    var a = $("<button>");
+                    // Adding a class
+                    a.addClass("animal");
+                    // Added a data-attribute
+                    a.attr("data-name", mainAnimals[i]);
+                    // Provided the initial button text
+                    a.text(mainAnimals[i]);
+                    // Added the button to the HTML
+                    $("#animal-btns").append(a);
+                }
+            }
+
+
+
+            // Functions
+            $("#add-animal").on("click", function (event) {
+
+                event.preventDefault();
+
+                var searchTerm = $("#animal-input").val().trim();
+
+                mainAnimals.push(searchTerm);
+
+                console.log(searchTerm);
+
+                renderButtons();
+            });
+
+            $(document).on("click", ".animal-btns", displayAnimalGifs);
+
+            renderButtons();
+            // Methods/logic
+
+            // Dynamic click handler to call gifs on button clicks
+
+        </script>
+    </div>
+</body>
+
+</html>
