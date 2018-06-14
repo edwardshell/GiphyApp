@@ -30,7 +30,8 @@
             <!-- Button triggers new movie to be added -->
             <input id="add-animal" type="submit" value="Add a Movie Bro">
         </form>
-
+        <!-- dump gifs here -->
+        <div id="gif-image"></div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
@@ -38,32 +39,62 @@
 
             // Variables
 
+
             var mainAnimals = ["Dog", "Cat", "Horse", "Pig"];
 
-            function displayAnimalGifs() {
-
-                var queryURL = "https://api.giphy.com/v1/gifs/search?api_key=" + apiKey + "&q=";
-
-                var apiKey = "6dok1Fe1Fc5TAkOPJW57eoTpFnPgCNT3";
-
-                var animalDiv = $("#animal-btns");
 
 
+
+            // var apiKey = ;
+
+
+
+            var animalDiv = $("#animal-btns");
+
+
+            function getGifs() {
+                var animal = $(this).attr("data-name")
+
+
+                var queryURL = "https://api.giphy.com/v1/gifs/search?api_key=6dok1Fe1Fc5TAkOPJW57eoTpFnPgCNT3&q=" + animal + "&limit=10";
 
                 $.ajax({
                     url: queryURL,
+
                     method: "GET"
                 }).then(function (response) {
-                    createRow(response);
-                });
+                    console.log(response);
+                    return response;
 
+                    var results = response.data;
+
+                    for (var i = 0; i < results.length; i++) {
+
+                        var gif = $("<div>");
+
+                        var rating = $("<p>").text("Rating: " + results[i].rating);
+
+                        var gifImage = $("<img>");
+
+                        gifImage.attr("src", results[i].images.fixed_height.url);
+
+                        gif.append(p);
+                        gif.append(gifImage);
+
+                        $("#gif-image").prepend(gif);
+                        console.log(fixed_height.url);
+                    }
+
+                });
             }
+
+
 
             function renderButtons() {
 
                 // Deleting the animals prior to adding new movies
                 // (this is necessary otherwise we will have repeat buttons)
-                $("#animal-btns").empty();
+                $(".animal-btns").empty();
 
                 for (var i = 0; i < mainAnimals.length; i++) {
                     // Then dynamicaly generating buttons for each movie in the array
@@ -76,7 +107,7 @@
                     // Provided the initial button text
                     a.text(mainAnimals[i]);
                     // Added the button to the HTML
-                    $("#animal-btns").append(a);
+                    $(".animal-btns").append(a);
                 }
             }
 
@@ -96,7 +127,8 @@
                 renderButtons();
             });
 
-            $(document).on("click", ".animal-btns", displayAnimalGifs);
+            $(document).on("click", ".animal", getGifs);
+
 
             renderButtons();
             // Methods/logic
