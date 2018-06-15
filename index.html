@@ -11,7 +11,28 @@
         div,
         form,
         input {
-            margin: 10px;
+            margin: 5px;
+        }
+
+        button {
+            background: #eeeeee;
+            color: black;
+        }
+
+        form {
+            float: right;
+            margin: 20px 20px 20px 20px;
+            padding: 20px 20px 20px 20px;
+            background: #eeeeee;
+            border: 2px solid gray;
+        }
+
+        body {
+            background-image: url(Images/background.png);
+        }
+
+        h4 {
+            color: white;
         }
     </style>
 
@@ -23,120 +44,152 @@
         <div class="animal-btns"></div>
 
         <form id="animal-form">
-            <label for="animal-input">Add an Animal</label>
+            <label for="animal-input">Pick an Animal:</label>
             <input type="text" id="animal-input">
             <br>
             <br>
             <!-- Button triggers new movie to be added -->
-            <input id="add-animal" type="submit" value="Add a Movie Bro">
+            <input id="add-animal" type="submit" value="Add Animal Button">
         </form>
+
+        <h4>Click the buttons above to see the GIFS, click the GIFS to see them come to life!</h4>
         <!-- dump gifs here -->
         <div id="gif-image"></div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
 
-        <script type="text/javascript">
-
-            // Variables
-
-
-            var mainAnimals = ["Dog", "Cat", "Horse", "Pig"];
+        // Variables
 
 
-
-
-            // var apiKey = ;
+        var mainAnimals = ["Dog", "Cat", "Horse", "Pig"];
 
 
 
-            var animalDiv = $("#animal-btns");
-
-
-            function getGifs() {
-                var animal = $(this).attr("data-name")
-
-
-                var queryURL = "https://api.giphy.com/v1/gifs/search?api_key=6dok1Fe1Fc5TAkOPJW57eoTpFnPgCNT3&q=" + animal + "&limit=10";
-
-                $.ajax({
-                    url: queryURL,
-
-                    method: "GET"
-                }).then(function (response) {
-                    console.log(response);
-                    return response;
-
-                    var results = response.data;
-
-                    for (var i = 0; i < results.length; i++) {
-
-                        var gif = $("<div>");
-
-                        var rating = $("<p>").text("Rating: " + results[i].rating);
-
-                        var gifImage = $("<img>");
-
-                        gifImage.attr("src", results[i].images.fixed_height.url);
-
-                        gif.append(p);
-                        gif.append(gifImage);
-
-                        $("#gif-image").prepend(gif);
-                        console.log(fixed_height.url);
-                    }
-
-                });
-            }
 
 
 
-            function renderButtons() {
 
-                // Deleting the animals prior to adding new movies
-                // (this is necessary otherwise we will have repeat buttons)
-                $(".animal-btns").empty();
+        var animalDiv = $("#animal-btns");
 
-                for (var i = 0; i < mainAnimals.length; i++) {
-                    // Then dynamicaly generating buttons for each movie in the array
-                    // This code $("<button>") is all jQuery needs to create the beginning and end tag. (<button></button>)
-                    var a = $("<button>");
-                    // Adding a class
-                    a.addClass("animal");
-                    // Added a data-attribute
-                    a.attr("data-name", mainAnimals[i]);
-                    // Provided the initial button text
-                    a.text(mainAnimals[i]);
-                    // Added the button to the HTML
-                    $(".animal-btns").append(a);
+
+        function getGifs() {
+            var animal = $(this).attr("data-name")
+
+
+            var queryURL = "https://api.giphy.com/v1/gifs/search?api_key=6dok1Fe1Fc5TAkOPJW57eoTpFnPgCNT3&q=" + animal + "&limit=10";
+
+            $.ajax({
+                url: queryURL,
+
+                method: "GET"
+            }).then(function (response) {
+                console.log(response);
+                
+                clear();
+                var results = response.data;
+
+                for (var i = 0; i < results.length; i++) {
+
+                    var gif = $("<div>");
+
+                    var rating = $("<p>").text("Rating: " + results[i].rating);
+
+                    var gifImage = $("<img class='giphy'>");
+
+                    gifImage.attr("src", results[i].images.fixed_height_still.url);
+
+                    gifImage.attr("data-still", results[i].images.fixed_height_still.url);
+                    gifImage.attr("data-animate", results[i].images.fixed_height.url);
+                    gifImage.attr("data-state", "still");
+
+                    gif.prepend(rating);
+                    gif.prepend(gifImage);
+
+
+
+
+                    $("#gif-image").prepend(gif);
+                    
                 }
-            }
 
-
-
-            // Functions
-            $("#add-animal").on("click", function (event) {
-
-                event.preventDefault();
-
-                var searchTerm = $("#animal-input").val().trim();
-
-                mainAnimals.push(searchTerm);
-
-                console.log(searchTerm);
-
-                renderButtons();
             });
 
-            $(document).on("click", ".animal", getGifs);
+        }
 
+
+        function clear() {
+            $("#gif-image").empty();
+        }
+        $(document).on("click", ".giphy", function () {
+            console.log(this)
+            var state = $(this).attr("data-state");
+
+            if (state === "still") {
+                $(this).attr("src", $(this).attr("data-animate"));
+                $(this).attr("data-state", "animate");
+            } else {
+                $(this).attr("src", $(this).attr("data-still"));
+                $(this).attr("data-state", "still");
+            }
+        });
+
+        function renderButtons() {
+
+            // Deleting the animals prior to adding new movies
+            // (this is necessary otherwise we will have repeat buttons)
+            $(".animal-btns").empty();
+
+            for (var i = 0; i < mainAnimals.length; i++) {
+                // Then dynamicaly generating buttons for each movie in the array
+                // This code $("<button>") is all jQuery needs to create the beginning and end tag. (<button></button>)
+                var a = $("<button>");
+                // Adding a class
+                a.addClass("animal");
+                // Added a data-attribute
+                a.attr("data-name", mainAnimals[i]);
+                // Provided the initial button text
+                a.text(mainAnimals[i]);
+                // Added the button to the HTML
+                $(".animal-btns").append(a);
+            }
+        }
+
+
+
+        // Functions
+        $("#add-animal").on("click", function (event) {
+
+            event.preventDefault();
+
+            var searchTerm = $("#animal-input").val().trim();
+
+            mainAnimals.push(searchTerm);
+
+            console.log(searchTerm);
 
             renderButtons();
+
+            clear();
+
+
+        });
+
+        $(document).on("click", ".animal", getGifs)
+
+
+
+
+        renderButtons();
             // Methods/logic
 
             // Dynamic click handler to call gifs on button clicks
 
-        </script>
-    </div>
+
+
+    </script>
+
 </body>
 
 </html>
